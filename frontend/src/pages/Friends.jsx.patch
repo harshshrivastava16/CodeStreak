@@ -1,0 +1,35 @@
+=======
+      const res = await axios.get(`http://localhost:5000/api/users/friends/${user.uid}`);
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+      const res = await axios.post("/api/users/add-friend", {
+        userId: user.uid,
+        friendId: newFriend,
+      });
+=======
+      const res = await axios.post("http://localhost:5000/api/users/add-friend", {
+        userId: user.uid,
+        friendId: newFriend,
+      });
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+      await axios.post("/api/users/accept-friend-request", {
+        userId: user.uid,
+        requesterId,
+      });
+=======
+      await axios.post("http://localhost:5000/api/users/accept-friend-request", {
+        receiverId: user.uid,
+        senderId: requesterId,
+      });
+>>>>>>> REPLACE
+<<<<<<< SEARCH
+      await axios.post("/api/users/decline-friend-request", {
+        userId: user.uid,
+        requesterId,
+      });
+=======
+      await axios.post("http://localhost:5000/api/users/decline-friend-request", {
+        receiverId: user.uid,
+        senderId: requesterId,
+      });

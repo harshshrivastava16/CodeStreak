@@ -1,0 +1,4 @@
+- [ ] Modify buildActivities in backend/jobs/mlInsightsRefresher.js to fetch LeetCode submission data using fetchLeetcodeData and build activities based on daily submissions.
+- [ ] Update the activity structure: for each day with submissions >0, create activity with success=1, time_spent=1.0, topic='general', date=parsed date.
+- [ ] Limit activities to last 365 days.
+- [ ] Test the updated ML insights refresher.

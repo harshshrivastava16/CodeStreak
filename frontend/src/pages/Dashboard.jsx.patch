@@ -1,0 +1,16 @@
+const longest = streaks?.longestStreaks?.[platform] || 0;
+                // Correctly find username from platforms array
+                const platformObj = streaks?.platforms?.find(p => p.platform === platform);
+                const username = platformObj ? platformObj.username : "Not set";
+                const lastUpdated = streaks?.lastUpdated?.[platform]
+                  ? new Date(streaks.lastUpdated[platform]).toLocaleDateString()
+                  : "-";
+=======
+                const current = streaks?.currentStreaks?.[platform] ?? 0;
+                const longest = streaks?.longestStreaks?.[platform] ?? 0;
+                // Correctly find username from platforms array
+                const platformObj = streaks?.platforms?.find(p => p.platform === platform);
+                const username = platformObj?.username ?? "Not set";
+                const lastUpdated = streaks?.lastUpdated?.[platform]
+                  ? new Date(streaks.lastUpdated[platform]).toLocaleDateString()
+                  : "-";

@@ -1,0 +1,371 @@
+import React, { useState, useEffect } from "react";
+import { useUser } from "../context/UserContext";
+import axiosInstance from "../api/axiosInstance";
+import Sidebar from "../components/Sidebar";
+
+const Insights = () => {
+  const { user } = useUser();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [insights, setInsights] = useState(null);
+  const [timeRange, setTimeRange] = useState("6M");
+
+  useEffect(() => {
+    const fetchInsights = async () => {
+      try {
+        setLoading(true);
+        // Mock data for now - replace with actual API call
+        const mockInsights = {
+          weakTopics: [
+            { name: "Dynamic Programming", score: 65, color: "red" },
+            { name: "Graph Theory", score: 72, color: "yellow" },
+            { name: "String Manipulation", score: 58, color: "red" }
+          ],
+          predictions: {
+            potdSuccess: 85,
+            riskOfDrop: 12
+          },
+          performanceHistory: {
+            data: [
+              { month: "Apr", consistency: 75, problemRate: 60, accuracy: 80 },
+              { month: "May", consistency: 80, problemRate: 70, accuracy: 85 },
+              { month: "Jun", consistency: 85, problemRate: 75, accuracy: 82 },
+              { month: "Jul", consistency: 78, problemRate: 68, accuracy: 88 },
+              { month: "Aug", consistency: 82, problemRate: 72, accuracy: 86 },
+              { month: "Sep", consistency: 88, problemRate: 78, accuracy: 90 }
+            ]
+          },
+          timeInsights: {
+            peakHours: "late afternoon and early evening",
+            reminderWindow: "5 PM and 7 PM"
+          },
+          recommendedProblems: [
+            { title: "Advanced Graph Algorithms", platform: "LeetCode", difficulty: "Hard" },
+            { title: "Dynamic Programming Challenges", platform: "Codeforces", difficulty: "Medium" },
+            { title: "String Manipulation Techniques", platform: "GFG", difficulty: "Medium" }
+          ],
+          lastUpdated: new Date().toLocaleString()
+        };
+
+        setInsights(mockInsights);
+        setError(null);
+      } catch (err) {
+        setError("Failed to load insights");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchInsights();
+    }
+  }, [user]);
+
+  const refreshInsights = () => {
+    setLoading(true);
+    // Simulate refresh delay
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#18181b] flex items-center justify-center">
+        <div className="text-white">Please log in to view insights.</div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#18181b] flex items-center justify-center">
+        <div className="text-zinc-400 animate-pulse">Loading insights...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#18181b] flex items-center justify-center">
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-center text-red-400">
+          <h2 className="text-lg font-semibold">Error Fetching Data</h2>
+          <p>We couldn't retrieve your AI insights. Please try refreshing.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#18181b] text-white" style={{ fontFamily: "Space Grotesk, Noto Sans, sans-serif" }}>
+      <div className="relative flex size-full min-h-screen flex-row bg-background dark group/design-root overflow-x-hidden">
+        <Sidebar variant="insights" />
+<main
+        className="relative z-10 flex-1 p-8 md:p-10 overflow-y-auto
+                   pt-[4.4rem] md:pt-[4.4rem] md:pl-52"
+      >          <div className="mx-auto max-w-7xl">
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 className="bg-gradient-to-r from-lime-400 via-blue-500 to-purple-600 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
+                  AI Insights
+                </h1>
+                <p className="mt-1 text-sm text-zinc-400">
+                  Last updated: {insights?.lastUpdated || "Just now"}
+                </p>
+              </div>
+              <button
+                onClick={refreshInsights}
+                className="flex h-10 w-32 items-center justify-center rounded-lg bg-zinc-800 text-sm font-semibold text-white transition-colors hover:bg-zinc-700"
+              >
+                <span className="material-symbols-outlined mr-2 text-lg">refresh</span>
+                Refresh now
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {/* Left Column */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:col-span-1 lg:grid-cols-1">
+                {/* Weak Topics */}
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                  <h3 className="text-lg font-semibold text-white">Weak Topics</h3>
+                  <p className="mb-4 text-sm text-zinc-400">Focus on these areas to improve.</p>
+                  <ul className="space-y-4">
+                    {insights?.weakTopics?.map((topic, index) => (
+                      <li key={index} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-zinc-300">{topic.name}</span>
+                          <span className={`font-semibold ${
+                            topic.color === 'red' ? 'text-red-400' :
+                            topic.color === 'yellow' ? 'text-yellow-400' : 'text-green-400'
+                          }`}>
+                            {topic.score}%
+                          </span>
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-zinc-700">
+                          <div
+                            className="h-2 rounded-full bg-gradient-to-r from-lime-400 via-blue-500 to-purple-600"
+                            style={{ width: `${topic.score}%` }}
+                          ></div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Predictions */}
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                  <h3 className="text-lg font-semibold text-white">Predictions</h3>
+                  <p className="mb-4 text-sm text-zinc-400">Your forecasted performance.</p>
+                  <div className="flex flex-col items-center justify-center gap-6">
+                    <div className="relative">
+                      <div
+                        className="progress-circle flex size-40 items-center justify-center rounded-full"
+                        style={{ '--progress': insights?.predictions?.potdSuccess || 0 }}
+                      >
+                        <span className="text-4xl font-bold text-white">
+                          {insights?.predictions?.potdSuccess || 0}%
+                        </span>
+                      </div>
+                      <p className="mt-2 text-center text-zinc-300">POTD Success Probability</p>
+                    </div>
+                    <div className="flex items-center justify-between self-stretch rounded-lg bg-zinc-800/50 p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-yellow-400">warning</span>
+                        <span className="text-zinc-300">Risk of Drop</span>
+                      </div>
+                      <span className="font-semibold text-yellow-400">
+                        {insights?.predictions?.riskOfDrop || 0}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Performance History Chart */}
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 lg:col-span-2">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">Performance History</h3>
+                    <p className="text-sm text-zinc-400">Your coding performance trends over time.</p>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-lg bg-zinc-800 p-1">
+                    <button
+                      onClick={() => setTimeRange("3M")}
+                      className={`px-3 py-1 text-xs font-medium transition-colors ${
+                        timeRange === "3M" ? "text-white" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      3M
+                    </button>
+                    <button
+                      onClick={() => setTimeRange("6M")}
+                      className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                        timeRange === "6M" ? "bg-zinc-700 text-white" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      6M
+                    </button>
+                    <button
+                      onClick={() => setTimeRange("1Y")}
+                      className={`px-3 py-1 text-xs font-medium transition-colors ${
+                        timeRange === "1Y" ? "text-white" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      1Y
+                    </button>
+                    <button
+                      onClick={() => setTimeRange("All")}
+                      className={`px-3 py-1 text-xs font-medium transition-colors ${
+                        timeRange === "All" ? "text-white" : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      All
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-6 h-80">
+                  <svg className="h-full w-full" fill="none" viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="lineGradient" x1="0" x2="1" y1="0" y2="0">
+                        <stop offset="0%" stopColor="#a3e635"></stop>
+                        <stop offset="50%" stopColor="#3b82f6"></stop>
+                        <stop offset="100%" stopColor="#9333ea"></stop>
+                      </linearGradient>
+                      <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2"></stop>
+                        <stop offset="100%" stopColor="#18181b" stopOpacity="0"></stop>
+                      </linearGradient>
+                    </defs>
+
+                    {/* Grid lines */}
+                    <g className="text-zinc-700" strokeWidth="1">
+                      <line x1="40" x2="480" y1="220" y2="220"></line>
+                      <line strokeDasharray="2 2" x1="40" x2="480" y1="175" y2="175"></line>
+                      <line strokeDasharray="2 2" x1="40" x2="480" y1="130" y2="130"></line>
+                      <line strokeDasharray="2 2" x1="40" x2="480" y1="85" y2="85"></line>
+                      <line strokeDasharray="2 2" x1="40" x2="480" y1="40" y2="40"></line>
+                    </g>
+
+                    {/* Y-axis labels */}
+                    <g className="text-xs text-zinc-400" fill="currentColor">
+                      <text textAnchor="end" x="30" y="225">0</text>
+                      <text textAnchor="end" x="30" y="175">25</text>
+                      <text textAnchor="end" x="30" y="130">50</text>
+                      <text textAnchor="end" x="30" y="85">75</text>
+                      <text textAnchor="end" x="30" y="40">100</text>
+                    </g>
+
+                    {/* X-axis labels */}
+                    <g className="text-xs text-zinc-400" fill="currentColor" textAnchor="middle">
+                      {insights?.performanceHistory?.data?.map((point, index) => (
+                        <text key={index} x={70 + index * 70} y="240">
+                          {point.month}
+                        </text>
+                      ))}
+                    </g>
+
+                    {/* Area fill */}
+                    <polygon
+                      points={`70,220 ${insights?.performanceHistory?.data?.map((point, index) =>
+                        `${70 + index * 70},${220 - point.consistency * 1.8}`
+                      ).join(' ')} ${70 + (insights?.performanceHistory?.data?.length - 1) * 70},220 70,220`}
+                      fill="url(#areaGradient)"
+                    />
+
+                    {/* Line */}
+                    <polyline
+                      points={insights?.performanceHistory?.data?.map((point, index) =>
+                        `${70 + index * 70},${220 - point.consistency * 1.8}`
+                      ).join(' ')}
+                      fill="none"
+                      stroke="url(#lineGradient)"
+                      strokeWidth="2"
+                    />
+
+                    {/* Data points */}
+                    <g className="data-points">
+                      {insights?.performanceHistory?.data?.map((point, index) => (
+                        <circle
+                          key={index}
+                          className="hover:r-6 transition-all cursor-pointer"
+                          cx={70 + index * 70}
+                          cy={220 - point.consistency * 1.8}
+                          fill="#a3e635"
+                          r="4"
+                        />
+                      ))}
+                    </g>
+                  </svg>
+                </div>
+
+                <div className="mt-4 flex items-center justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-2 w-4 rounded-full bg-lime-400"></div>
+                    <span className="text-xs text-zinc-400">Consistency</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="h-2 w-4 rounded-full bg-blue-500"></div>
+                    <span className="text-xs text-zinc-400">Problem Rate</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="h-2 w-4 rounded-full bg-purple-600"></div>
+                    <span className="text-xs text-zinc-400">Accuracy</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Insights */}
+            <div className="mt-6 space-y-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                  <h3 className="text-lg font-semibold text-white">Time vs Accuracy</h3>
+                  <p className="mt-2 text-zinc-300">
+                    Your accuracy peaks in the{" "}
+                    <span className="bg-gradient-to-r from-lime-400 via-blue-500 to-purple-600 bg-clip-text font-semibold text-transparent">
+                      {insights?.timeInsights?.peakHours || "late afternoon and early evening"}
+                    </span>
+                    . Schedule sessions then for optimal results.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                  <h3 className="text-lg font-semibold text-white">Best Reminder Window</h3>
+                  <p className="mt-2 text-zinc-300">
+                    We recommend setting reminders between{" "}
+                    <span className="bg-gradient-to-r from-lime-400 via-blue-500 to-purple-600 bg-clip-text font-semibold text-transparent">
+                      {insights?.timeInsights?.reminderWindow || "5 PM and 7 PM"}
+                    </span>{" "}
+                    to align with your peak performance hours.
+                  </p>
+                </div>
+              </div>
+
+              {/* Recommended Problems */}
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <h3 className="text-lg font-semibold text-white">Recommended Problems</h3>
+                <p className="mb-4 text-sm text-zinc-400">Tailored problems to sharpen your skills.</p>
+                <div className="divide-y divide-zinc-800">
+                  {insights?.recommendedProblems?.map((problem, index) => (
+                    <div key={index} className="flex items-center justify-between py-3">
+                      <div>
+                        <p className="text-zinc-200">{problem.title}</p>
+                        <p className="text-xs text-zinc-400">{problem.platform}</p>
+                      </div>
+                      <button className="text-lime-400 hover:text-lime-300 transition-colors">
+                        <span className="material-symbols-outlined">arrow_forward</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Insights;
